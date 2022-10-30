@@ -4,6 +4,7 @@ const GenerateMainFileStep  = @import("build/generatedmain.zig").GenerateMainFil
 const commands = [_][]const u8 {
     "echo",
     "false",
+    "sync",
     "true",
 };
 
