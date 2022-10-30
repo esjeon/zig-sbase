@@ -6,7 +6,7 @@ pub fn modMain() !u8 {
     var nflag = false;
     var first = true;
 
-    if (i < argv.len and argv[i] == "-n") {
+    if (i < argv.len and std.mem.eql(u8, std.mem.sliceTo(argv[i], 0), "-n")) {
         nflag = true;
         i += 1;
     }
