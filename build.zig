@@ -6,6 +6,7 @@ const commands = [_][]const u8 {
     "false",
     "sync",
     "true",
+    "yes",
 };
 
 pub fn build(b: *std.build.Builder) void {
