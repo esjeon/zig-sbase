@@ -1,3 +1,3 @@
-pub fn main() !u8 {
+pub fn modMain() !u8 {
     return 1;
 }
