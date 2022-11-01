@@ -7,32 +7,46 @@ fn GenericArgReader(comptime T: type, comptime sentinel: ?u8) type {
 
         argv: T,
         i: usize,
-        finished: bool,
+        positional: bool,
 
         pub fn init(argv: T) This {
             return This{
                 .argv = argv,
                 .i = 0,
-                .finished = false,
+                .positional = false,
             };
         }
 
-        pub fn next(self: *This) ?[]const u8 {
-            if (self.finished or self.i >= self.argv.len) {
+        fn get_current_word(self: *This) []const u8 {
+            if (sentinel) |s| {
+                return std.mem.sliceTo(self.argv[self.i], s);
+            } else {
+                return self.argv[self.i];
+            }
+        }
+
+        pub fn nextFlag(self: *This) ?[]const u8 {
+            if (self.positional or self.i >= self.argv.len) {
                 return null;
             }
 
-            const word = (if (sentinel) |s|
-                std.mem.sliceTo(self.argv[self.i], s)
-            else
-                self.argv[self.i]);
-
+            const word = self.get_current_word();
             if (word[0] != '-') {
                 // Got a positional argument. Finish parsing flags.
-                self.finished = true;
+                self.positional = true;
                 return null;
             }
 
+            self.i += 1;
+            return word;
+        }
+
+        pub fn nextPositional(self: *This) ?[]const u8 {
+            if (!self.positional or self.i >= self.argv.len) {
+                return null;
+            }
+
+            const word = self.get_current_word();
             self.i += 1;
             return word;
         }
@@ -42,18 +56,29 @@ fn GenericArgReader(comptime T: type, comptime sentinel: ?u8) type {
 pub const ArgReader = GenericArgReader([][*:0]const u8, '0');
 pub const SliceArgReader = GenericArgReader([][]const u8, null);
 
-test "expect .next() to read independent flags" {
-    var args = [_][]const u8{ "-a", "-b" };
+test "basic usecase" {
+    var args = [_][]const u8{ "-a", "-b", "Hello", "world" };
     var reader = SliceArgReader.init(args[0..]);
 
-    var flag = reader.next();
-    try std.testing.expect(flag != null);
-    try std.testing.expect(std.mem.eql(u8, flag.?, "-a"));
+    var ret = reader.nextFlag();
+    try std.testing.expect(ret != null);
+    try std.testing.expect(std.mem.eql(u8, ret.?, "-a"));
 
-    flag = reader.next();
-    try std.testing.expect(flag != null);
-    try std.testing.expect(std.mem.eql(u8, flag.?, "-b"));
+    ret = reader.nextFlag();
+    try std.testing.expect(ret != null);
+    try std.testing.expect(std.mem.eql(u8, ret.?, "-b"));
 
-    flag = reader.next();
-    try std.testing.expect(flag == null);
+    ret = reader.nextFlag();
+    try std.testing.expect(ret == null);
+
+    ret = reader.nextPositional();
+    try std.testing.expect(ret != null);
+    try std.testing.expect(std.mem.eql(u8, ret.?, "Hello"));
+
+    ret = reader.nextPositional();
+    try std.testing.expect(ret != null);
+    try std.testing.expect(std.mem.eql(u8, ret.?, "world"));
+
+    ret = reader.nextPositional();
+    try std.testing.expect(ret == null);
 }
