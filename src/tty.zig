@@ -1,5 +1,5 @@
 const std = @import("std");
-const ArgReader = @import("argreader.zig").ArgReader;
+const ArgReader = @import("util/args.zig").ArgReader;
 
 pub extern "c" fn ttyname(c_int) ?[*:0]u8;
 

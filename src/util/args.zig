@@ -1,7 +1,7 @@
 const std = @import("std");
 const startsWith = std.mem.startsWith;
 
-const util = @import("util.zig");
+const util = @import("readint.zig");
 
 pub const ArgReaderError = error{
     AlreadyFinished,

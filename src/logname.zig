@@ -1,5 +1,5 @@
 const std = @import("std");
-const ArgReader = @import("argreader.zig").ArgReader;
+const ArgReader = @import("util/args.zig").ArgReader;
 
 pub fn usage() void {
     const name = std.mem.sliceTo(std.os.argv[0], 0);
