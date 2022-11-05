@@ -5,6 +5,7 @@ const commands = [_][]const u8 {
     "dirname",
     "echo",
     "false",
+    "link",
     "sync",
     "true",
     "yes",

@@ -122,6 +122,10 @@ pub fn GenericArgReader(comptime T: type, comptime sentinel: ?u8) type {
             }
             return null;
         }
+
+        pub fn countRest(self: *This) usize {
+            return self.argc - self.i;
+        }
     };
 }
 
