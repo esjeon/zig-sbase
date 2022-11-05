@@ -7,6 +7,7 @@ const commands = [_][]const u8 {
     "false",
     "link",
     "logname",
+    "sleep",
     "sync",
     "true",
     "unlink",
