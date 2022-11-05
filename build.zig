@@ -8,6 +8,7 @@ const commands = [_][]const u8 {
     "link",
     "sync",
     "true",
+    "unlink",
     "yes",
 };
 
