@@ -10,6 +10,7 @@ const commands = [_][]const u8 {
     "sleep",
     "sync",
     "true",
+    "tty",
     "unlink",
     "yes",
 };
@@ -27,6 +28,7 @@ pub fn build(b: *std.build.Builder) void {
         const exe = b.addExecutableSource(cmd, main_file.getSource());
         exe.setTarget(target);
         exe.setBuildMode(mode);
+        exe.linkLibC();
         exe.install();
 
         // add per-executable build step.
