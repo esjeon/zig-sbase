@@ -96,6 +96,22 @@ pub fn GenericArgReader(comptime T: type, comptime sentinel: ?u8) type {
             return num;
         }
 
+        pub fn readString(self: *This) ArgReaderError![]const u8 {
+            if (self.finished) return error.AlreadyFinished;
+
+            if (self.j) |j| {
+                // read from the current word.
+                self.j = null;
+                if (j < self.word.len) {
+                    return self.word[j..];
+                }
+            }
+
+            self.word = self.readArg();
+            self.i += 1;
+            return self.word;
+        }
+
         pub fn nextPositional(self: *This) ?[]const u8 {
             if (!self.finished) return null;
 
@@ -195,5 +211,31 @@ test "read composite integer parameter" {
     try std.testing.expect(reader.nextFlag().? == 'c');
     try std.testing.expect(try reader.readInt() == 34);
     try std.testing.expect(reader.nextFlag() == null);
+    try std.testing.expect(reader.nextPositional() == null);
+}
+
+test "read string parameter" {
+    var args = [_][]const u8{ "-a", "hello", "-b", "world", "-c"};
+    var reader = SliceArgReader.init(args[0..]);
+
+    try std.testing.expect(reader.nextFlag().? == 'a');
+    try std.testing.expect(std.mem.eql(u8, try reader.readString(), "hello"));
+    try std.testing.expect(reader.nextFlag().? == 'b');
+    try std.testing.expect(std.mem.eql(u8, try reader.readString(), "world"));
+    try std.testing.expect(reader.nextFlag().? == 'c');
+    try std.testing.expect(reader.nextFlag() == null);
+    try std.testing.expect(reader.nextPositional() == null);
+}
+
+test "read composite string parameter" {
+    var args = [_][]const u8{ "-ahello", "-bworld", "0" };
+    var reader = SliceArgReader.init(args[0..]);
+
+    try std.testing.expect(reader.nextFlag().? == 'a');
+    try std.testing.expect(std.mem.eql(u8, try reader.readString(), "hello"));
+    try std.testing.expect(reader.nextFlag().? == 'b');
+    try std.testing.expect(std.mem.eql(u8, try reader.readString(), "world"));
+    try std.testing.expect(reader.nextFlag() == null);
+    try std.testing.expect(std.mem.eql(u8, reader.nextPositional().?, "0"));
     try std.testing.expect(reader.nextPositional() == null);
 }
