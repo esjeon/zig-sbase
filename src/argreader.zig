@@ -1,6 +1,13 @@
 const std = @import("std");
 const startsWith = std.mem.startsWith;
 
+const util = @import("util.zig");
+
+pub const ArgReaderError = error{
+    AlreadyFinished,
+    IntParseFailure,
+};
+
 pub fn GenericArgReader(comptime T: type, comptime sentinel: ?u8) type {
     return struct {
         const This = @This();
@@ -65,6 +72,28 @@ pub fn GenericArgReader(comptime T: type, comptime sentinel: ?u8) type {
                 return self.word[1];
             }
             return null;
+        }
+
+        pub fn readInt(self: *This) ArgReaderError!i32 {
+            if (self.finished) return error.AlreadyFinished;
+
+            if (self.j) |j| {
+                // read from the current word.
+                if (j < self.word.len) {
+                    var len: usize = 0;
+                    const n = util.readInt(i32, self.word[j..], &len) catch return error.IntParseFailure;
+                    self.j = j + len;
+                    return n;
+                } else {
+                    self.j = null;
+                }
+            }
+
+            // read the next word as int.
+            self.word = self.readArg();
+            self.i += 1;
+            const num: i32 = std.fmt.parseInt(i32, self.word, 0) catch return error.IntParseFailure;
+            return num;
         }
 
         pub fn nextPositional(self: *This) ?[]const u8 {
@@ -145,5 +174,26 @@ test "gracefully handle empty string" {
     try std.testing.expect(reader.nextFlag() == null);
     try std.testing.expect(std.mem.eql(u8, reader.nextPositional().?, ""));
     try std.testing.expect(std.mem.eql(u8, reader.nextPositional().?, "0"));
+    try std.testing.expect(reader.nextPositional() == null);
+}
+
+test "read integer parameter" {
+    var args = [_][]const u8{ "-a", "12", "0" };
+    var reader = SliceArgReader.init(args[0..]);
+
+    try std.testing.expect(reader.nextFlag().? == 'a');
+    try std.testing.expect(try reader.readInt() == 12);
+}
+
+test "read composite integer parameter" {
+    var args = [_][]const u8{ "-a12b", "-c34" };
+    var reader = SliceArgReader.init(args[0..]);
+
+    try std.testing.expect(reader.nextFlag().? == 'a');
+    try std.testing.expect(try reader.readInt() == 12);
+    try std.testing.expect(reader.nextFlag().? == 'b');
+    try std.testing.expect(reader.nextFlag().? == 'c');
+    try std.testing.expect(try reader.readInt() == 34);
+    try std.testing.expect(reader.nextFlag() == null);
     try std.testing.expect(reader.nextPositional() == null);
 }
