@@ -2,6 +2,7 @@ const std = @import("std");
 const GenerateMainFileStep  = @import("build/generatedmain.zig").GenerateMainFileStep;
 
 const commands = [_][]const u8 {
+    "dirname",
     "echo",
     "false",
     "sync",

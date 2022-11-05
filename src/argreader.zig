@@ -125,7 +125,7 @@ pub fn GenericArgReader(comptime T: type, comptime sentinel: ?u8) type {
     };
 }
 
-pub const ArgReader = GenericArgReader([][:0]const u8, '\x00');
+pub const ArgReader = GenericArgReader([][*:0]const u8, '\x00');
 pub const SliceArgReader = GenericArgReader([][]const u8, null);
 
 test "parse flags" {
