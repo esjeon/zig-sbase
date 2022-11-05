@@ -14,6 +14,7 @@ const commands = [_][]const u8 {
     "tty",
     "unlink",
     "yes",
+    "whoami",
 };
 
 pub fn build(b: *std.build.Builder) void {
