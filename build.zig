@@ -6,6 +6,7 @@ const commands = [_][]const u8 {
     "echo",
     "false",
     "link",
+    "logname",
     "sync",
     "true",
     "unlink",
