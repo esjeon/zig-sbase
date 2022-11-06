@@ -26,15 +26,26 @@ pub fn build(b: *std.build.Builder) void {
         const main_file = GenerateMainFileStep.create(b, cmd);
 
         // register executable.
-        // const exe = b.addExecutable(cmd, "src/" ++ cmd ++ ".zig");
         const exe = b.addExecutableSource(cmd, main_file.getSource());
         exe.setTarget(target);
         exe.setBuildMode(mode);
         exe.linkLibC();
         exe.install();
 
+        const exe_install = exe.install_step orelse unreachable;
+
         // add per-executable build step.
         const build_step = b.step("bin-" ++ cmd, "Build `" ++ cmd ++ "`");
-        build_step.dependOn(&(exe.install_step orelse unreachable).step);
+        build_step.dependOn(&exe_install.step);
+
+        // add run step for each command.
+        const exe_run = exe.run();
+        exe_run.step.dependOn(&exe_install.step);
+        if (b.args) |args| {
+            exe_run.addArgs(args);
+        }
+
+        const run_step = b.step("run-" ++ cmd, "Run `" ++ cmd ++ "`");
+        run_step.dependOn(&exe_run.step);
     }
 }
