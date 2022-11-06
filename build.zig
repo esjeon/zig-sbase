@@ -15,6 +15,7 @@ const commands = [_][]const u8 {
     "unlink",
     "yes",
     "whoami",
+    "hostname",
 };
 
 pub fn build(b: *std.build.Builder) void {
