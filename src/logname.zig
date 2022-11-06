@@ -1,5 +1,9 @@
 const std = @import("std");
 const ArgReader = @import("util/args.zig").ArgReader;
+const eprintf = @import("util/eprintf.zig").eprintf;
+const sliceTo = std.mem.sliceTo;
+
+extern "c" fn getlogin() ?[*:0]const u8;
 
 pub fn usage() void {
     const name = std.mem.sliceTo(std.os.argv[0], 0);
@@ -14,20 +18,17 @@ pub fn modMain() !u8 {
         usage();
     }
 
-	if (args.countRest() != 0) {
-		usage();
-	}
+    if (args.countRest() != 0) {
+        usage();
+    }
 
     var stdout = std.io.getStdOut().writer();
 
-    // NOTE: the musl implementation of `getenv` only reads env var, but glibc
-    // goes further and reads the info of the controlling TTY.
-    //
-    // Here, the musl approach is implemented.
-	if (std.os.getenv("LOGNAME")) |logname| {
-        try stdout.print("{s}\n", .{logname});
+    const name = getlogin();
+    if (name) |n| {
+        try stdout.print("{s}\n", .{sliceTo(n, 0)});
     } else {
-        try stdout.writeAll("no login name\n");
+        eprintf("no login name\n", .{}, .{});
     }
 
     return 0;
