@@ -48,4 +48,9 @@ pub fn build(b: *std.build.Builder) void {
         const run_step = b.step("run-" ++ cmd, "Run `" ++ cmd ++ "`");
         run_step.dependOn(&exe_run.step);
     }
+
+    const test_util_step = b.step("test-util", "test utility functions");
+    const test_errno = b.addTest("src/util/errno.zig");
+    test_errno.linkLibC();
+    test_util_step.dependOn(&test_errno.step);
 }
