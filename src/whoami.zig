@@ -1,26 +1,16 @@
 const std = @import("std");
 const ArgReader = @import("util/args.zig").ArgReader;
+const eprintf = @import("util/eprintf.zig").eprintf;
+const errno = @import("util/errno.zig");
 
 const c = @cImport({
     @cInclude("unistd.h");
     @cInclude("pwd.h");
 });
 
-extern fn __errno_location() [*c]c_int;
-extern "c" fn perror([*c]const u8) void;
-
-fn get_errno() c_int {
-    return __errno_location().*;
-}
-
-fn set_errno(arg_no: c_int) void {
-    __errno_location().* = arg_no;
-}
-
 pub fn usage() void {
     const name = std.mem.sliceTo(std.os.argv[0], 0);
-    std.debug.print("usage: {s}\n", .{name});
-    std.os.exit(1);
+    eprintf("usage: {s}\n", .{name}, .{.exit=1});
 }
 
 pub fn modMain() !u8 {
@@ -35,19 +25,17 @@ pub fn modMain() !u8 {
 	}
 
     var stdout = std.io.getStdOut().writer();
-    var stderr = std.io.getStdErr().writer();
 
     const uid = c.geteuid();
-    set_errno(0);
+    errno.set(0);
     var pw = c.getpwuid(uid);
     if (pw == null) {
-        if (get_errno() == 0) {
-            try stderr.print("getpwuid {d}: no such user\n", .{uid});
+        if (errno.get() == 0) {
+            eprintf("getpwuid {d}: no such user\n", .{uid}, .{});
         } else {
-            try stderr.print("getpwuid {d}:", .{uid});
-            perror(null);
+            eprintf("getpwuid {d}:", .{uid}, .{.perror=true});
         }
-        return 1;
+        unreachable;
     }
     const name = std.mem.sliceTo(pw.*.pw_name, 0);
     try stdout.print("{s}\n", .{name});
