@@ -10,8 +10,7 @@ extern "c" fn sethostname(name: [*]const u8, len: usize) c_int;
 
 pub fn usage() void {
     const name = std.mem.sliceTo(std.os.argv[0], 0);
-    std.debug.print("usage: {s} [name]\n", .{name});
-    std.os.exit(1);
+    eprintf("usage: {s} [name]\n", .{name}, .{});
 }
 
 pub fn modMain() !u8 {

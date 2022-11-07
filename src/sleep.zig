@@ -1,10 +1,10 @@
 const std = @import("std");
 const ArgReader = @import("util/args.zig").ArgReader;
+const eprintf = @import("util/eprintf.zig").eprintf;
 
 pub fn usage() void {
     const name = std.mem.sliceTo(std.os.argv[0], 0);
-    std.debug.print("usage: {s} num\n", .{name});
-    std.os.exit(1);
+    eprintf("usage: {s} num\n", .{name}, .{});
 }
 
 pub fn modMain() !u8 {
@@ -14,9 +14,9 @@ pub fn modMain() !u8 {
         usage();
     }
 
-	if (args.countRest() != 1) {
-		usage();
-	}
+    if (args.countRest() != 1) {
+        usage();
+    }
 
     const sec = try std.fmt.parseInt(u64, args.nextPositional().?, 10);
     std.time.sleep(sec * 1000 * 1000 * 1000);

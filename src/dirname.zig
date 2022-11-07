@@ -1,10 +1,10 @@
 const std = @import("std");
 const ArgReader = @import("util/args.zig").ArgReader;
+const eprintf = @import("util/eprintf.zig").eprintf;
 
 pub fn usage() void {
     const name = std.mem.sliceTo(std.os.argv[0], 0);
-    std.debug.print("usage: {s} path\n", .{name});
-    std.os.exit(1);
+    eprintf("usage: {s} path\n", .{name}, .{});
 }
 
 pub fn modMain() !u8 {

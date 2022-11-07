@@ -7,8 +7,7 @@ extern "c" fn getlogin() ?[*:0]const u8;
 
 pub fn usage() void {
     const name = std.mem.sliceTo(std.os.argv[0], 0);
-    std.debug.print("usage: {s}\n", .{name});
-    std.os.exit(1);
+    eprintf("usage: {s}\n", .{name}, .{});
 }
 
 pub fn modMain() !u8 {

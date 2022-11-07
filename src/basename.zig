@@ -1,10 +1,10 @@
 const std = @import("std");
 const ArgReader = @import("util/args.zig").ArgReader;
+const eprintf = @import("util/eprintf.zig").eprintf;
 
 pub fn usage() void {
     const name = std.mem.sliceTo(std.os.argv[0], 0);
-    std.debug.print("usage: {s} path [suffix]\n", .{name});
-    std.os.exit(1);
+    eprintf("usage: {s} path [suffix]\n", .{name}, .{});
 }
 
 pub fn modMain() !u8 {
@@ -16,7 +16,7 @@ pub fn modMain() !u8 {
 
     const argc = args.countRest();
     if (argc != 1 and argc != 2) {
-		usage();
+        usage();
     }
 
     const path = args.nextPositional().?;
@@ -24,7 +24,7 @@ pub fn modMain() !u8 {
     if (argc == 2) {
         const suffix = args.nextPositional().?;
         if (std.mem.endsWith(u8, name, suffix)) {
-            name = name[0..name.len - suffix.len];
+            name = name[0 .. name.len - suffix.len];
         }
     }
 
