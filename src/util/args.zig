@@ -132,6 +132,14 @@ pub fn GenericArgReader(comptime T: type, comptime sentinel: ?u8) type {
 pub const ArgReader = GenericArgReader([][*:0]const u8, '\x00');
 pub const SliceArgReader = GenericArgReader([][]const u8, null);
 
+pub fn parseArgs() ArgReader {
+    return ArgReader.init(std.os.argv[1..]);
+}
+
+pub fn getArgv0() []const u8 {
+    return std.mem.sliceTo(std.os.argv[0], 0);
+}
+
 test "parse flags" {
     var args = [_][]const u8{ "-a", "-b", "-c" };
     var reader = SliceArgReader.init(args[0..]);
@@ -219,7 +227,7 @@ test "read composite integer parameter" {
 }
 
 test "read string parameter" {
-    var args = [_][]const u8{ "-a", "hello", "-b", "world", "-c"};
+    var args = [_][]const u8{ "-a", "hello", "-b", "world", "-c" };
     var reader = SliceArgReader.init(args[0..]);
 
     try std.testing.expect(reader.nextFlag().? == 'a');

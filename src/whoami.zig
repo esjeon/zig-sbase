@@ -1,6 +1,5 @@
 const std = @import("std");
-const ArgReader = @import("util/args.zig").ArgReader;
-const eprintf = @import("util/eprintf.zig").eprintf;
+const util = @import("./util.zig");
 const errno = @import("util/errno.zig");
 
 const c = @cImport({
@@ -9,20 +8,19 @@ const c = @cImport({
 });
 
 pub fn usage() void {
-    const name = std.mem.sliceTo(std.os.argv[0], 0);
-    eprintf("usage: {s}\n", .{name}, .{.exit=1});
+    util.eprintf("usage: {s}\n", .{util.getArgv0()}, .{ .exit = 1 });
 }
 
 pub fn modMain() !u8 {
-    var args = ArgReader.init(std.os.argv[1..]);
+    var args = util.parseArgs();
 
     while (args.nextFlag()) |_| {
         usage();
     }
 
-	if (args.countRest() != 0) {
-		usage();
-	}
+    if (args.countRest() != 0) {
+        usage();
+    }
 
     var stdout = std.io.getStdOut().writer();
 
@@ -31,9 +29,9 @@ pub fn modMain() !u8 {
     var pw = c.getpwuid(uid);
     if (pw == null) {
         if (errno.get() == 0) {
-            eprintf("getpwuid {d}: no such user\n", .{uid}, .{});
+            util.eprintf("getpwuid {d}: no such user\n", .{uid}, .{});
         } else {
-            eprintf("getpwuid {d}:", .{uid}, .{.perror=true});
+            util.eprintf("getpwuid {d}:", .{uid}, .{ .perror = true });
         }
         unreachable;
     }

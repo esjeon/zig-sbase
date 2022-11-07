@@ -1,17 +1,15 @@
 const std = @import("std");
-const ArgReader = @import("util/args.zig").ArgReader;
-const eprintf = @import("util/eprintf.zig").eprintf;
+const util = @import("./util.zig");
 const sliceTo = std.mem.sliceTo;
 
 extern "c" fn getlogin() ?[*:0]const u8;
 
 pub fn usage() void {
-    const name = std.mem.sliceTo(std.os.argv[0], 0);
-    eprintf("usage: {s}\n", .{name}, .{});
+    util.eprintf("usage: {s}\n", .{util.getArgv0()}, .{});
 }
 
 pub fn modMain() !u8 {
-    var args = ArgReader.init(std.os.argv[1..]);
+    var args = util.parseArgs();
 
     while (args.nextFlag()) |_| {
         usage();
@@ -27,7 +25,7 @@ pub fn modMain() !u8 {
     if (name) |n| {
         try stdout.print("{s}\n", .{sliceTo(n, 0)});
     } else {
-        eprintf("no login name\n", .{}, .{});
+        util.eprintf("no login name\n", .{}, .{});
     }
 
     return 0;
