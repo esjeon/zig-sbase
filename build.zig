@@ -56,6 +56,10 @@ pub fn build(b: *std.build.Builder) void {
     test_errno.linkLibC();
     test_util_step.dependOn(&test_errno.step);
 
+    const test_mode = b.addTest("src/util/mode.zig");
+    test_mode.linkLibC();
+    test_util_step.dependOn(&test_mode.step);
+
     const test_args = b.addTest("src/util/args.zig");
     test_util_step.dependOn(&test_args.step);
 }
