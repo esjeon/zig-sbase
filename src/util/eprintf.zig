@@ -2,7 +2,7 @@ const std = @import("std");
 
 extern "c" fn perror([*c]const u8) void;
 
-pub fn eprintf(comptime fmt: []const u8, args: anytype, comptime opts: anytype) noreturn {
+pub fn weprintf(comptime fmt: []const u8, args: anytype, comptime opts: anytype) void {
     const stderr = std.io.getStdErr().writer();
 
     if (!std.mem.startsWith(u8, fmt, "usage")) {
@@ -17,6 +17,10 @@ pub fn eprintf(comptime fmt: []const u8, args: anytype, comptime opts: anytype) 
             perror(null);
         }
     }
+}
+
+pub fn eprintf(comptime fmt: []const u8, args: anytype, comptime opts: anytype) noreturn {
+    weprintf(fmt, args, opts);
 
     if (@hasField(@TypeOf(opts), "exit")) {
         std.os.exit(opts.exit);
