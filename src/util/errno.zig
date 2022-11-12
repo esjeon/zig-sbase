@@ -13,8 +13,7 @@ test "get errno" {
 
     // Perform a random failing operation.
     var buf: [4]u8 = undefined;
-    _ = std.c.read(99, &buf, 0);
-
+    try std.testing.expect(std.c.read(199, &buf, 0) == -1);
     try std.testing.expect(get() != 0);
 }
 
