@@ -17,6 +17,7 @@ const commands = [_][]const u8{
     "whoami",
     "hostname",
     "mkfifo",
+    "printenv",
 };
 
 pub fn build(b: *std.build.Builder) void {
