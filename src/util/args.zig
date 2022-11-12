@@ -12,7 +12,7 @@ pub fn GenericArgReader(comptime T: type, comptime sentinel: ?u8) type {
     return struct {
         const This = @This();
 
-        argv: T,
+        argv: []T,
         argc: usize,
         i: usize,
 
@@ -21,7 +21,7 @@ pub fn GenericArgReader(comptime T: type, comptime sentinel: ?u8) type {
 
         finished: bool,
 
-        pub fn init(args: T) This {
+        pub fn init(args: []T) This {
             return This{
                 .argv = args,
                 .argc = args.len,
@@ -123,14 +123,25 @@ pub fn GenericArgReader(comptime T: type, comptime sentinel: ?u8) type {
             return null;
         }
 
+        pub fn nextPositionalRaw(self: *This) ?T {
+            if (!self.finished) return null;
+
+            if (self.i < self.argc) {
+                const arg = self.argv[self.i];
+                self.i += 1;
+                return arg;
+            }
+            return null;
+        }
+
         pub fn countRest(self: *This) usize {
             return self.argc - self.i;
         }
     };
 }
 
-pub const ArgReader = GenericArgReader([][*:0]const u8, '\x00');
-pub const SliceArgReader = GenericArgReader([][]const u8, null);
+pub const ArgReader = GenericArgReader([*:0]const u8, '\x00');
+pub const SliceArgReader = GenericArgReader([]const u8, null);
 
 pub fn parseArgs() ArgReader {
     return ArgReader.init(std.os.argv[1..]);
