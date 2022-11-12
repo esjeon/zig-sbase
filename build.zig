@@ -1,7 +1,7 @@
 const std = @import("std");
-const GenerateMainFileStep  = @import("build/generatedmain.zig").GenerateMainFileStep;
+const GenerateMainFileStep = @import("build/generatedmain.zig").GenerateMainFileStep;
 
-const commands = [_][]const u8 {
+const commands = [_][]const u8{
     "basename",
     "dirname",
     "echo",
@@ -16,6 +16,7 @@ const commands = [_][]const u8 {
     "yes",
     "whoami",
     "hostname",
+    "mkfifo",
 };
 
 pub fn build(b: *std.build.Builder) void {
