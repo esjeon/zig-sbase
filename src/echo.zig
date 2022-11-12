@@ -2,7 +2,7 @@ const std = @import("std");
 const util = @import("./util.zig");
 
 pub fn usage() void {
-    util.eprintf("usage: {s} [-n] [string ...]", .{util.getArgv0()}, .{});
+    util.eprintf("usage: {s} [-n] [string ...]\n", .{util.getArgv0()}, .{});
 }
 
 pub fn modMain() !u8 {
