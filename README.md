@@ -13,7 +13,7 @@ language is for system development. Not adequate for production use.
 Status
 --------
 
-Total 97, ported 14.
+Total 97, ported 17.
 
  - [x] false
  - [x] true
@@ -29,10 +29,10 @@ Total 97, ported 14.
  - [x] hostname
  - [x] basename
  - [x] whoami
- - [ ] mkfifo
- - [ ] printenv
+ - [x] mkfifo
+ - [x] printenv
  - [ ] rm
- - [ ] sponge
+ - [x] sponge
  - [ ] sha1sum
  - [ ] sha224sum
  - [ ] sha256sum
