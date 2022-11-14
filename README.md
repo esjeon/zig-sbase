@@ -41,7 +41,7 @@ Total 97, ported 17.
  - [ ] sha512-256sum
  - [ ] sha512sum
  - [ ] md5sum
- - [ ] nohup
+ - [x] nohup
  - [ ] setsid
  - [ ] chroot
  - [ ] env
