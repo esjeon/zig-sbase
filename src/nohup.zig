@@ -37,24 +37,9 @@ pub fn modMain() !u8 {
             util.eprintf("dup2:", .{}, .{ .perror = true, .exit = 127 });
     }
 
-    // NOTE: We're going to use `execvp`, which is NOT provided by `std`.
-    //
-    // We need to manually convert arguments *back* to C-style arrays, but, to
-    // do that, we need a memory allocator. Not very minimal.
-
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
-    var alloc = arena.allocator();
-
-    var argv = std.os.argv[1..];
-
-    const argv_buf = try alloc.allocSentinel(?[*:0]u8, argv.len, null);
-    for (argv) |arg, i|
-        argv_buf[i] = arg;
-
-    _ = c.execvp(argv_buf.ptr[0].?, argv_buf.ptr);
-
-    if (util.errno.get() == c.ENOENT)
-        return 127;
-    return 126;
+    util.execvp(arena.allocator(), std.os.argv[1..]) catch |err| {
+        c._exit(@intCast(c_int, 126) + @boolToInt(err == error.FileNotFound));
+    };
 }
