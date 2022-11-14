@@ -11,11 +11,11 @@ pub fn weprintf(comptime fmt: []const u8, args: anytype, comptime opts: anytype)
     }
     stderr.print(fmt, args) catch {};
 
-    if (@hasField(@TypeOf(opts), "perror")) {
-        if (opts.perror == true) {
-            _ = stderr.write(" ") catch {};
-            perror(null);
-        }
+    if (std.mem.endsWith(u8, fmt, ":") or
+        (@hasField(@TypeOf(opts), "perror") and opts.perror == true))
+    {
+        _ = stderr.write(" ") catch {};
+        perror(null);
     }
 }
 
