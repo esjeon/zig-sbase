@@ -40,6 +40,7 @@ pub fn modMain() !u8 {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     util.execvp(arena.allocator(), std.os.argv[1..]) catch |err| {
+        util.weprintf("execvp:", .{}, .{});
         c._exit(@intCast(c_int, 126) + @boolToInt(err == error.FileNotFound));
     };
 }
