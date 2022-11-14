@@ -18,6 +18,7 @@ const commands = [_][]const u8{
     "hostname",
     "mkfifo",
     "printenv",
+    "sponge",
 };
 
 pub fn build(b: *std.build.Builder) void {
