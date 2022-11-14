@@ -20,6 +20,7 @@ const commands = [_][]const u8{
     "printenv",
     "sponge",
     "nohup",
+    "setsid",
 };
 
 pub fn build(b: *std.build.Builder) void {

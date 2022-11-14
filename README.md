@@ -42,7 +42,7 @@ Total 97, ported 17.
  - [ ] sha512sum
  - [ ] md5sum
  - [x] nohup
- - [ ] setsid
+ - [x] setsid
  - [ ] chroot
  - [ ] env
  - [ ] mkdir
