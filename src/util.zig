@@ -11,3 +11,4 @@ pub const getArgv0 = args.getArgv0;
 pub const parseMode = mode.parseMode;
 pub const getUmask = mode.getUmask;
 pub const execvp = exec.execvp;
+pub const zexecvp = exec.zexecvp;
