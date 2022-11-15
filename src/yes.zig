@@ -17,10 +17,8 @@ pub fn modMain() !u8 {
         else => usage(),
     };
 
-    var stdout = std.io.getStdOut();
-    while (true) {
-        try stdout.writeAll(s);
-        try stdout.writeAll("\n");
-    }
+    var stdout = std.io.getStdOut().writer();
+    while (true)
+        try stdout.print("{s}\n", .{s});
     return 0;
 }

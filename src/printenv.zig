@@ -9,29 +9,25 @@ pub fn modMain() !u8 {
     var args = util.parseArgs();
     var ret: u8 = 0;
 
-    while (args.nextFlag()) |flag| {
-        switch (flag) {
-            else => usage(),
-        }
-    }
+    while (args.nextFlag()) |_|
+        usage();
 
     var stdio_buf = std.io.bufferedWriter(std.io.getStdIn().writer());
     var stdio = stdio_buf.writer();
 
     if (args.countRest() == 0) {
-        for (std.os.environ) |ptr| {
+        for (std.os.environ) |ptr|
             try stdio.print("{s}\n", .{std.mem.sliceTo(ptr, 0)});
-        }
     } else {
         while (args.nextPositional()) |key| {
-            if (std.os.getenv(key)) |value| {
-                try stdio.print("{s}\n", .{value});
-            } else {
+            const value = std.os.getenv(key) orelse {
                 ret = 1;
-            }
+                continue;
+            };
+            try stdio.print("{s}\n", .{value});
         }
     }
 
-    try stdio_buf.flush();
-    return 0;
+    stdio_buf.flush() catch {};
+    return ret;
 }

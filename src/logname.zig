@@ -11,22 +11,16 @@ pub fn usage() noreturn {
 pub fn modMain() !u8 {
     var args = util.parseArgs();
 
-    while (args.nextFlag()) |_| {
+    while (args.nextFlag()) |_|
         usage();
-    }
 
-    if (args.countRest() != 0) {
+    if (args.countRest() != 0)
         usage();
-    }
 
     var stdout = std.io.getStdOut().writer();
-
-    const name = getlogin();
-    if (name) |n| {
-        try stdout.print("{s}\n", .{sliceTo(n, 0)});
-    } else {
+    const name = getlogin() orelse
         util.eprintf("no login name\n", .{}, .{});
-    }
 
+    try stdout.print("{s}\n", .{sliceTo(name, 0)});
     return 0;
 }

@@ -20,7 +20,7 @@ pub fn modMain() !u8 {
 
     var stdout_buffer = std.io.bufferedWriter(std.io.getStdOut().writer());
     var stdout = stdout_buffer.writer();
-    defer stdout_buffer.flush() catch unreachable;
+    defer stdout_buffer.flush() catch {};
 
     if (args.nextPositional()) |arg|
         try stdout.print("{s}", .{arg});

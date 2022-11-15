@@ -8,18 +8,14 @@ pub fn usage() noreturn {
 pub fn modMain() !u8 {
     var args = util.parseArgs();
 
-    while (args.nextFlag()) |_| {
+    while (args.nextFlag()) |_|
         usage();
-    }
 
-    var stdout = std.io.getStdOut();
+    var stdout = std.io.getStdOut().writer();
+
     while (args.nextPositional()) |arg| {
-        if (std.fs.path.dirname(arg)) |dirname| {
-            try stdout.writeAll(dirname);
-            try stdout.writeAll("\n");
-        } else {
-            try stdout.writeAll("/\n");
-        }
+        const dirname = std.fs.path.dirname(arg) orelse "/";
+        try stdout.print("{s}\n", .{dirname});
     }
 
     return 0;

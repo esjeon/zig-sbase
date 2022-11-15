@@ -13,23 +13,25 @@ pub fn usage() noreturn {
 
 pub fn modMain() !u8 {
     var args = util.parseArgs();
-    var buf: [std.os.HOST_NAME_MAX:0]u8 = undefined;
 
-    while (args.nextFlag()) |_| {
+    while (args.nextFlag()) |_|
         usage();
-    }
 
     var stdout = std.io.getStdOut().writer();
-    if (args.countRest() == 0) {
-        if (gethostname(&buf, buf.len) < 0)
-            util.eprintf("gethostname:", .{}, .{ .perror = true });
-        try stdout.print("{s}\n", .{sliceTo(&buf, 0)});
-    } else if (args.countRest() == 1) {
-        const name = args.nextPositional().?;
-        if (sethostname(name.ptr, name.len) < 0)
-            util.eprintf("sethostname:", .{}, .{ .perror = true });
-    } else {
-        usage();
+    var buf: [std.os.HOST_NAME_MAX:0]u8 = undefined;
+
+    switch (args.countRest()) {
+        0 => {
+            if (gethostname(&buf, buf.len) < 0)
+                util.eprintf("gethostname:", .{}, .{ .perror = true });
+            stdout.print("{s}\n", .{sliceTo(&buf, 0)}) catch {};
+        },
+        1 => {
+            const name = args.nextPositional().?;
+            if (sethostname(name.ptr, name.len) < 0)
+                util.eprintf("sethostname:", .{}, .{ .perror = true });
+        },
+        else => usage(),
     }
 
     return 0;

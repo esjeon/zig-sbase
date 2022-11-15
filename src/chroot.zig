@@ -26,6 +26,8 @@ pub fn modMain() !u8 {
 
     std.os.chdir("/") catch
         util.eprintf("chdir:", .{}, .{});
+    // TODO: find a better way to convert error to string.
+    //       Perhaps, `strerror`?
 
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();

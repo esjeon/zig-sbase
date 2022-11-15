@@ -10,13 +10,11 @@ pub fn usage() noreturn {
 pub fn modMain() !u8 {
     var args = util.parseArgs();
 
-    while (args.nextFlag()) |_| {
+    while (args.nextFlag()) |_|
         usage();
-    }
 
-    if (args.countRest() != 0) {
+    if (args.countRest() != 0)
         usage();
-    }
 
     var stdout = std.io.getStdOut().writer();
 
