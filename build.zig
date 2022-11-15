@@ -21,6 +21,7 @@ const commands = [_][]const u8{
     "sponge",
     "nohup",
     "setsid",
+    "chroot",
 };
 
 pub fn build(b: *std.build.Builder) void {
