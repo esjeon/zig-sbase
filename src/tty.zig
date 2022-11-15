@@ -20,12 +20,11 @@ pub fn modMain() !u8 {
 
     var stdout = std.io.getStdOut().writer();
 
-    if (ttyname(0)) |tty| {
-        const ttyslice = std.mem.sliceTo(tty, 0);
-        try stdout.print("{s}\n", .{ttyslice});
-        return 0;
-    } else {
+    var c_tty = ttyname(0) orelse {
         try stdout.writeAll("not a tty\n");
         return 1;
-    }
+    };
+
+    try stdout.print("{s}\n", .{std.mem.sliceTo(c_tty, 0)});
+    return 0;
 }
