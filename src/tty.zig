@@ -3,7 +3,7 @@ const util = @import("./util.zig");
 
 pub extern "c" fn ttyname(c_int) ?[*:0]u8;
 
-pub fn usage() void {
+pub fn usage() noreturn {
     util.eprintf("usage: {s}\n", .{util.getArgv0()}, .{});
 }
 

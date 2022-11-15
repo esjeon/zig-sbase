@@ -4,7 +4,7 @@ const sliceTo = std.mem.sliceTo;
 
 extern "c" fn getlogin() ?[*:0]const u8;
 
-pub fn usage() void {
+pub fn usage() noreturn {
     util.eprintf("usage: {s}\n", .{util.getArgv0()}, .{});
 }
 

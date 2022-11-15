@@ -7,7 +7,7 @@ const c = @cImport({
     @cInclude("pwd.h");
 });
 
-pub fn usage() void {
+pub fn usage() noreturn {
     util.eprintf("usage: {s}\n", .{util.getArgv0()}, .{ .exit = 1 });
 }
 

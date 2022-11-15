@@ -4,7 +4,7 @@ const c = @cImport({
     @cInclude("sys/stat.h");
 });
 
-pub fn usage() void {
+pub fn usage() noreturn {
     util.eprintf("usage: {s} [-m mode] name ...\n", .{util.getArgv0()}, .{});
 }
 

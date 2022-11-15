@@ -1,7 +1,7 @@
 const std = @import("std");
 const util = @import("./util.zig");
 
-pub fn usage() void {
+pub fn usage() noreturn {
     util.eprintf("usage: {s} [-n] [string ...]\n", .{util.getArgv0()}, .{});
 }
 

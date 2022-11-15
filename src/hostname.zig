@@ -7,7 +7,7 @@ extern "c" fn gethostname(name: [*:0]const u8, len: usize) c_int;
 // NOTE: `sethostname` receives length separately, thus doesn't require sentinel in `name`.
 extern "c" fn sethostname(name: [*]const u8, len: usize) c_int;
 
-pub fn usage() void {
+pub fn usage() noreturn {
     util.eprintf("usage: {s} [name]\n", .{util.getArgv0()}, .{});
 }
 
