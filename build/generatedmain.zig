@@ -14,14 +14,9 @@ pub const GenerateMainFileStep = struct {
     generated: GeneratedFile,
 
     pub fn create(builder: *Builder, module_name: []const u8) *GenerateMainFileStep {
-        const self = builder.allocator.create(GenerateMainFileStep ) catch unreachable;
+        const self = builder.allocator.create(GenerateMainFileStep) catch unreachable;
         self.* = GenerateMainFileStep{
-            .step = Step.init(.{
-                .id = .run,
-                .name = builder.fmt("Generate main for module {s}", .{module_name}),
-                .owner = builder,
-                .makeFn = make
-            }),
+            .step = Step.init(.{ .id = .run, .name = builder.fmt("Generate main for module {s}", .{module_name}), .owner = builder, .makeFn = make }),
             .builder = builder,
             .module_name = module_name,
             .generated = GeneratedFile{ .step = &self.step },
@@ -31,7 +26,11 @@ pub const GenerateMainFileStep = struct {
     }
 
     pub fn getSource(self: *GenerateMainFileStep) LazyPath {
-        return LazyPath{ .generated = .{ .file = &self.generated, }, };
+        return LazyPath{
+            .generated = .{
+                .file = &self.generated,
+            },
+        };
     }
 
     fn make(step: *Step, options: Step.MakeOptions) !void {

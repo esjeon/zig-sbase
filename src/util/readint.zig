@@ -1,10 +1,9 @@
-
-pub const ReadIntError = error {
+pub const ReadIntError = error{
     Empty,
 };
 
 pub fn readInt(comptime T: type, str: []const u8, ret_len: ?*usize) ReadIntError!T {
-    if (str.len == 0) return  error.Empty;
+    if (str.len == 0) return error.Empty;
 
     var neg = false;
     var i: usize = 0;
@@ -18,7 +17,7 @@ pub fn readInt(comptime T: type, str: []const u8, ret_len: ?*usize) ReadIntError
         i += 1;
     }
 
-    while(i < str.len) {
+    while (i < str.len) {
         const c = str[i];
 
         if (c < '0' or c > '9') {
