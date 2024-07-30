@@ -16,6 +16,6 @@ pub fn modMain() !u8 {
 
     const pathname = args.nextPositional().?;
 
-    try std.os.unlink(pathname);
+    try std.posix.unlink(pathname);
     return 0;
 }

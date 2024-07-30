@@ -16,6 +16,6 @@ pub fn modMain() !u8 {
 
     const oldpath = args.nextPositional().?;
     const newpath = args.nextPositional().?;
-    try std.os.link(oldpath, newpath, 0);
+    try std.posix.link(oldpath, newpath, 0);
     return 0;
 }

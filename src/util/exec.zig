@@ -7,7 +7,7 @@ const c = @cImport({
 
 pub fn zexecvp(allocator: std.mem.Allocator, argv: []const []const u8) !noreturn {
     const argv_buf = try allocator.allocSentinel(?[*:0]u8, argv.len, null);
-    for (argv) |arg, i|
+    for (0.., argv) |i, arg|
         argv_buf[i] = (try allocator.dupeZ(u8, arg)).ptr;
 
     try call_exec(argv_buf.ptr[0].?, argv_buf.ptr);
@@ -15,7 +15,7 @@ pub fn zexecvp(allocator: std.mem.Allocator, argv: []const []const u8) !noreturn
 
 pub fn execvp(allocator: std.mem.Allocator, argv: [][*:0]u8) !noreturn {
     const argv_buf = try allocator.allocSentinel(?[*:0]u8, argv.len, null);
-    for (argv) |arg, i|
+    for (0.., argv) |i, arg|
         argv_buf[i] = arg;
 
     try call_exec(argv_buf.ptr[0].?, argv_buf.ptr);
@@ -23,7 +23,7 @@ pub fn execvp(allocator: std.mem.Allocator, argv: [][*:0]u8) !noreturn {
 
 fn call_exec(file: [*c]const u8, argv: [*c]const [*c]u8) !noreturn {
     // Shamelessly copied over from `std.os.execveZ`.
-    switch (std.c.getErrno(c.execvp(file, argv))) {
+    switch (std.posix.errno(c.execvp(file, argv))) {
         .SUCCESS => unreachable,
         .FAULT => unreachable,
         .@"2BIG" => return error.SystemResources,
@@ -42,6 +42,6 @@ fn call_exec(file: [*c]const u8, argv: [*c]const [*c]u8) !noreturn {
         .NOTDIR => return error.NotDir,
         .TXTBSY => return error.FileBusy,
         .LIBBAD => return error.InvalidExe,
-        else => |err| return std.os.unexpectedErrno(err),
+        else => |err| return std.posix.unexpectedErrno(err),
     }
 }

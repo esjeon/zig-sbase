@@ -18,7 +18,7 @@ pub fn modMain() !u8 {
         usage();
 
     var stdout = std.io.getStdOut().writer();
-    var buf: [std.os.HOST_NAME_MAX:0]u8 = undefined;
+    var buf: [std.posix.HOST_NAME_MAX:0]u8 = undefined;
 
     switch (args.countRest()) {
         0 => {

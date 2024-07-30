@@ -24,7 +24,7 @@ pub fn modMain() !u8 {
 
     const uid = c.geteuid();
     errno.set(0);
-    var pw = c.getpwuid(uid);
+    const pw = c.getpwuid(uid);
     if (pw == null) {
         if (errno.get() == 0) {
             util.eprintf("getpwuid {d}: no such user\n", .{uid}, .{});

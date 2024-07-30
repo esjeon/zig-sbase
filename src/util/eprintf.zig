@@ -23,8 +23,8 @@ pub fn eprintf(comptime fmt: []const u8, args: anytype, comptime opts: anytype) 
     weprintf(fmt, args, opts);
 
     if (@hasField(@TypeOf(opts), "exit")) {
-        std.os.exit(opts.exit);
+        std.process.exit(opts.exit);
     } else {
-        std.os.exit(1);
+        std.process.exit(1);
     }
 }

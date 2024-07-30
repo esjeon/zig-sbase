@@ -24,29 +24,33 @@ const commands = [_][]const u8{
     "chroot",
 };
 
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
-    const mode = b.standardReleaseOptions();
+    const mode = b.standardOptimizeOption(.{});
 
     // Add all command executables.
     inline for (commands) |cmd| {
         const main_file = GenerateMainFileStep.create(b, cmd);
 
         // register executable.
-        const exe = b.addExecutableSource(cmd, main_file.getSource());
-        exe.setTarget(target);
-        exe.setBuildMode(mode);
-        exe.linkLibC();
-        exe.install();
+        const exe = b.addExecutable(.{
+            .name = cmd,
+            .root_source_file = main_file.getSource(),
+            .target = target,
+            .optimize = mode,
+            .link_libc = true,
+        });
 
-        const exe_install = exe.install_step orelse unreachable;
+        b.installArtifact(exe);
+
+        const exe_install = b.addInstallArtifact(exe, .{});
 
         // add per-executable build step.
         const build_step = b.step("bin-" ++ cmd, "Build `" ++ cmd ++ "`");
         build_step.dependOn(&exe_install.step);
 
         // add run step for each command.
-        const exe_run = exe.run();
+        const exe_run = b.addRunArtifact(exe);
         exe_run.step.dependOn(&exe_install.step);
         if (b.args) |args| {
             exe_run.addArgs(args);
@@ -58,14 +62,21 @@ pub fn build(b: *std.build.Builder) void {
 
     const test_util_step = b.step("test-util", "test utility functions");
 
-    const test_errno = b.addTest("src/util/errno.zig");
-    test_errno.linkLibC();
+    const test_errno = b.addTest(.{
+        .root_source_file = b.path("src/util/errno.zig"),
+        .link_libc = true,
+    });
     test_util_step.dependOn(&test_errno.step);
 
-    const test_mode = b.addTest("src/util/mode.zig");
-    test_mode.linkLibC();
+    const test_mode = b.addTest(.{
+        .root_source_file = b.path("src/util/mode.zig"),
+        .link_libc = true,
+    });
     test_util_step.dependOn(&test_mode.step);
 
-    const test_args = b.addTest("src/util/args.zig");
+    const test_args = b.addTest(.{
+        .root_source_file = b.path("src/util/args.zig"),
+        .link_libc = true,
+    });
     test_util_step.dependOn(&test_args.step);
 }

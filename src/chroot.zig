@@ -19,12 +19,12 @@ pub fn modMain() !u8 {
     if (args.countRest() == 0)
         usage();
 
-    var chroot_dir = args.nextPositionalRaw().?;
+    const chroot_dir = args.nextPositionalRaw().?;
 
     if (chroot(chroot_dir) < 0)
         util.eprintf("chroot {s}:", .{std.mem.sliceTo(chroot_dir, 0)}, .{});
 
-    std.os.chdir("/") catch
+    std.posix.chdir("/") catch
         util.eprintf("chdir:", .{}, .{});
     // TODO: find a better way to convert error to string.
     //       Perhaps, `strerror`?
@@ -33,17 +33,17 @@ pub fn modMain() !u8 {
     defer arena.deinit();
 
     if (args.countRest() == 0) {
-        const shell = if (std.os.getenv("SHELL")) |val| val else "/bin/shell";
+        const shell = if (std.posix.getenv("SHELL")) |val| val else "/bin/shell";
         const cmd = [_][]const u8{ shell, "-i" };
         util.zexecvp(arena.allocator(), cmd[0..]) catch |err| {
             util.weprintf("execvp:", .{}, .{});
-            c._exit(@intCast(c_int, 126) + @boolToInt(err == error.FileNotFound));
+            c._exit(@as(c_int, @intCast(126)) + @intFromBool(err == error.FileNotFound));
         };
     } else {
         const cmd: [][*:0]u8 = std.os.argv[2..];
         util.execvp(arena.allocator(), cmd) catch |err| {
             util.weprintf("execvp:", .{}, .{});
-            c._exit(@intCast(c_int, 126) + @boolToInt(err == error.FileNotFound));
+            c._exit(@as(c_int, @intCast(126)) + @intFromBool(err == error.FileNotFound));
         };
     }
 }

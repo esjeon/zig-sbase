@@ -18,7 +18,7 @@ pub fn modMain() !u8 {
 
     var stdout = std.io.getStdOut().writer();
 
-    var c_tty = ttyname(0) orelse {
+    const c_tty = ttyname(0) orelse {
         try stdout.writeAll("not a tty\n");
         return 1;
     };

@@ -11,7 +11,7 @@ pub fn modMain() !u8 {
     while (args.nextFlag()) |_|
         usage();
 
-    var s: []const u8 = switch (args.countRest()) {
+    const s: []const u8 = switch (args.countRest()) {
         0 => "y",
         1 => args.nextPositional().?,
         else => usage(),

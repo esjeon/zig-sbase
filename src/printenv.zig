@@ -20,7 +20,7 @@ pub fn modMain() !u8 {
             try stdio.print("{s}\n", .{std.mem.sliceTo(ptr, 0)});
     } else {
         while (args.nextPositional()) |key| {
-            const value = std.os.getenv(key) orelse {
+            const value = std.posix.getenv(key) orelse {
                 ret = 1;
                 continue;
             };

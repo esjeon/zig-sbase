@@ -17,7 +17,7 @@ pub fn modMain() !u8 {
     while (args.nextFlag()) |flag| {
         switch (flag) {
             'm' => {
-                var str = args.readString() catch
+                const str = args.readString() catch
                     util.eprintf("expect an argument for -m flag\n", .{}, .{});
                 mode = util.parseMode(str, mode, c.umask(0)) catch
                     util.eprintf("invalid file mode: {s}\n", .{str}, .{});

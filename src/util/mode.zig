@@ -6,7 +6,7 @@ const mode_t = c.mode_t;
 const expect = std.testing.expect;
 
 pub fn getUmask() mode_t {
-    var mask: mode_t = c.umask(0);
+    const mask: mode_t = c.umask(0);
     _ = c.umask(mask);
     return mask;
 }
@@ -121,7 +121,7 @@ pub fn parseMode(str: []const u8, base: mode_t, mask: mode_t) !mode_t {
         } // while
     } // next_mode: while
 
-    return mode & ~@intCast(mode_t, c.S_IFMT);
+    return mode & ~@as(mode_t, @intCast(c.S_IFMT));
 }
 
 test "parseMode uses octal numbers as-is" {

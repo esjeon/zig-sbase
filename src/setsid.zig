@@ -36,6 +36,6 @@ pub fn modMain() !u8 {
     defer arena.deinit();
     util.execvp(arena.allocator(), std.os.argv[1..]) catch |err| {
         util.weprintf("execvp:", .{}, .{});
-        c._exit(@intCast(c_int, 126) + @boolToInt(err == error.FileNotFound));
+        c._exit(@as(c_int, @intCast(126)) + @intFromBool(err == error.FileNotFound));
     };
 }

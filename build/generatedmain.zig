@@ -1,8 +1,8 @@
 const std = @import("std");
-const Step = std.build.Step;
-const Builder = std.build.Builder;
-const GeneratedFile = std.build.GeneratedFile;
-const FileSource = std.build.FileSource;
+const Step = std.Build.Step;
+const Builder = std.Build;
+const GeneratedFile = Builder.GeneratedFile;
+const LazyPath = std.Build.LazyPath;
 
 pub const GenerateMainFileStep = struct {
     step: Step,
@@ -16,7 +16,12 @@ pub const GenerateMainFileStep = struct {
     pub fn create(builder: *Builder, module_name: []const u8) *GenerateMainFileStep {
         const self = builder.allocator.create(GenerateMainFileStep ) catch unreachable;
         self.* = GenerateMainFileStep{
-            .step = Step.init(.run, builder.fmt("Generate main for module {s}", .{module_name}), builder.allocator, make),
+            .step = Step.init(.{
+                .id = .run,
+                .name = builder.fmt("Generate main for module {s}", .{module_name}),
+                .owner = builder,
+                .makeFn = make
+            }),
             .builder = builder,
             .module_name = module_name,
             .generated = GeneratedFile{ .step = &self.step },
@@ -25,12 +30,14 @@ pub const GenerateMainFileStep = struct {
         return self;
     }
 
-    pub fn getSource(self: *GenerateMainFileStep) FileSource {
-        return FileSource{ .generated = &self.generated };
+    pub fn getSource(self: *GenerateMainFileStep) LazyPath {
+        return LazyPath{ .generated = .{ .file = &self.generated, }, };
     }
 
-    fn make(step: *Step) !void {
-        const self = @fieldParentPtr(GenerateMainFileStep, "step", step);
+    fn make(step: *Step, options: Step.MakeOptions) !void {
+        _ = options;
+
+        const self = @as(*GenerateMainFileStep, @fieldParentPtr("step", step));
 
         const basename = self.builder.fmt("{s}_main.zig", .{self.module_name});
         const fullpath = self.builder.fmt("src/{s}", .{basename});

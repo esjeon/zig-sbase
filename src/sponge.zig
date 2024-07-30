@@ -28,17 +28,17 @@ pub fn modMain() !u8 {
         usage();
 
     const outpath = args.nextPositional().?;
-    const tmpl = "/tmp/sponge-XXXXXX";
+    const tmpl = "/tmp/sponge-XXXXXX\x00";
 
     // `mkstemp` modifies the provided string, so we need a writable buffer.
-    var tmpl_buf = std.mem.zeroes([tmpl.len + 1:0]u8);
-    std.mem.copy(u8, &tmpl_buf, tmpl);
+    var tmpl_buf: [19]u8 = undefined;
+    @memcpy(&tmpl_buf, tmpl);
 
     {
         const tmpfd = c.mkstemp(&tmpl_buf);
         if (tmpfd < 0)
             util.eprintf("mkstemp:", .{}, .{ .perror = true });
-        std.os.close(tmpfd);
+        std.posix.close(tmpfd);
     }
 
     const tmppath = std.mem.sliceTo(&tmpl_buf, 0);
@@ -46,11 +46,11 @@ pub fn modMain() !u8 {
     const tmpfile = try std.fs.openFileAbsolute(tmppath, .{
         .mode = .read_write,
     });
-    std.os.unlink(tmppath) catch {};
+    std.posix.unlink(tmppath) catch {};
 
     try copyData(std.io.getStdIn(), tmpfile);
 
-    var outfile = try std.fs.cwd().createFile(outpath, .{
+    const outfile = try std.fs.cwd().createFile(outpath, .{
         .read = false,
         .truncate = true,
         .mode = 0o666,
